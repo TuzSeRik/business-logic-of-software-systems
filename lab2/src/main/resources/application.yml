@@ -1,0 +1,17 @@
+server:
+  port: 22976
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://pg:5432/studs
+    username: s244709
+    password: bgi855
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+  data:
+    rest:
+      base-path: /api
