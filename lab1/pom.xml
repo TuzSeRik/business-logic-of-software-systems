@@ -7,7 +7,7 @@
     <artifactId>lab1</artifactId>
     <version>1.0.0</version>
     <name>lab1</name>
-    <description>First lab work from BLoSS course</description>
+    <description>First lab work from Business Logic of Software Systems course</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

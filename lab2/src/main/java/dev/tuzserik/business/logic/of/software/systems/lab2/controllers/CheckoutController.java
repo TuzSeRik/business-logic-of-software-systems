@@ -5,7 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-import dev.tuzserik.business.logic.of.software.systems.lab2.services.AuthorisationService;
+import dev.tuzserik.business.logic.of.software.systems.lab2.services.UserService;
 import dev.tuzserik.business.logic.of.software.systems.lab2.services.CheckoutService;
 import dev.tuzserik.business.logic.of.software.systems.lab2.model.Delivery;
 import dev.tuzserik.business.logic.of.software.systems.lab2.model.Order;
@@ -16,13 +16,13 @@ import dev.tuzserik.business.logic.of.software.systems.lab2.responses.*;
 @AllArgsConstructor @RestController
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class CheckoutController {
-    private final AuthorisationService authorisationService;
+    private final UserService userService;
     private final CheckoutService checkoutService;
 
     @PostMapping("/api/checkout")
     ResponseEntity<OrderStatusResponse> createOrder(@RequestBody OrderCreatingRequest request) {
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = authorisationService.findUserByLogin(login);
+        User user = userService.findUserByUsername(login);
 
         if (user != null) {
             Order order = checkoutService.createNewOrder(

@@ -7,5 +7,5 @@ import dev.tuzserik.business.logic.of.software.systems.lab2.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
-    User findUserByLogin(String login);
+    User findUserByUsername(String username);
 }
