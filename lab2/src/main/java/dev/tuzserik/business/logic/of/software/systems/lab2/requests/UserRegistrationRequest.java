@@ -5,7 +5,7 @@ import lombok.Data;
 
 @AllArgsConstructor @Data
 public class UserRegistrationRequest {
-    private String login;
+    private String username;
     private String password;
     private String givenName;
     private String familyName;

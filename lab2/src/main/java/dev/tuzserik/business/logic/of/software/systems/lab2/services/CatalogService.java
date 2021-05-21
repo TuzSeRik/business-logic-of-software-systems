@@ -19,7 +19,7 @@ public class CatalogService {
     private final ParameterRepository parameterRepository;
     private final CartRepository cartRepository;
 
-    public boolean checkIfBelongsToOneType(String type, Set<UUID> attrValue) {
+    public boolean verifyAttributes(String type, Set<UUID> attrValue) {
         return attrValue.stream()
                    .filter(a -> attributeRepository.getOne(a).getTypes()
                        .contains(typeRepository.getOne(UUID.fromString(type)))).count() == attrValue.size();
@@ -33,13 +33,13 @@ public class CatalogService {
                      .map(Parameter::getItem).collect(Collectors.toSet());
     }
 
-    public UUID checkCartId(UUID cartId) {
+    public UUID checkCartPresence(UUID cartId) {
         if (cartId.equals(new UUID(0, 0)))
             return UUID.randomUUID();
         return cartId;
     }
 
-    public Collection<UUID> getCart(UUID id) {
+    public Collection<UUID> getCartItems(UUID id) {
         if (!cartRepository.existsById(id))
             return cartRepository.getOne(new UUID(0, 0)).getItemIds();
         return cartRepository.getOne(id).getItemIds();

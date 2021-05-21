@@ -25,6 +25,8 @@ public class Security extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/user/**").permitAll()
                 .antMatchers("/api/customer/**").hasRole("CUSTOMER")
+                .antMatchers("/api/customer/catalog/**").permitAll()
+                .antMatchers("/api/customer/cart/**").permitAll()
                 .antMatchers("/api/moderator/**").hasRole("MODERATOR")
                 .antMatchers("/api/administrator/**").hasRole("ADMINISTRATOR")
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

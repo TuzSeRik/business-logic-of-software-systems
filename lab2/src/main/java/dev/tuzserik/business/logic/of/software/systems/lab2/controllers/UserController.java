@@ -36,11 +36,11 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
-    @PostMapping("/api/user")
-    ResponseEntity<UserInformationResponse> registerUser(@RequestBody UserRegistrationRequest request) {
+    @PostMapping("/")
+    ResponseEntity<UserInformationResponse> addUser(@RequestBody UserRegistrationRequest request) {
         User user = userService.saveUser(
                 new User()
-                .setUsername(request.getLogin())
+                .setUsername(request.getUsername())
                 .setPassword(request.getPassword())
                 .setRole(User.Role.ROLE_USER)
                 .setGivenName(request.getGivenName())

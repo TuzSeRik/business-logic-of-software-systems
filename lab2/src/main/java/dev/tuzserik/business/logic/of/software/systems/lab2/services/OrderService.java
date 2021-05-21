@@ -13,7 +13,7 @@ import dev.tuzserik.business.logic.of.software.systems.lab2.model.Order;
 import dev.tuzserik.business.logic.of.software.systems.lab2.repositories.UserRepository;
 
 @AllArgsConstructor @Service
-public class CheckoutService {
+public class OrderService {
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
