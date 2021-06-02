@@ -12,8 +12,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Collections;
-
-import dev.tuzserik.business.logic.of.software.systems.lab2.utils.JwtUtils;
+import dev.tuzserik.business.logic.of.software.systems.lab2.utils.Jwt;
 
 public class JwtAuthorisationFilter extends OncePerRequestFilter {
     @Override
@@ -25,11 +24,11 @@ public class JwtAuthorisationFilter extends OncePerRequestFilter {
             if (authenticationHeader != null && authenticationHeader.startsWith("Bearer ")) {
                 SecurityContextHolder.getContext().setAuthentication(
                         new UsernamePasswordAuthenticationToken(
-                                JwtUtils.decodeUsernameAndRole(authenticationHeader.replace("Bearer ", "")).getFirst(),
+                                Jwt.decodeUsernameAndRole(authenticationHeader.replace("Bearer ", "")).getFirst(),
                                 null,
                                 Collections.singleton(
                                         new SimpleGrantedAuthority(
-                                                (String) JwtUtils
+                                                (String) Jwt
                                                         .decodeUsernameAndRole(
                                                                 authenticationHeader
                                                                         .replace("Bearer ", "")

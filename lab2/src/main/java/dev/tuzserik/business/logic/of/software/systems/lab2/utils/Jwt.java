@@ -8,7 +8,7 @@ import org.springframework.data.util.Pair;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
-public class JwtUtils {
+public class Jwt {
     private static final SecretKey jwtSecret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     public static String encodeUsernameAndRole(String username, String role) {

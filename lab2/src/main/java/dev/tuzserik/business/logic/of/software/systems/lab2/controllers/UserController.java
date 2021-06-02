@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import dev.tuzserik.business.logic.of.software.systems.lab2.utils.JwtUtils;
+import dev.tuzserik.business.logic.of.software.systems.lab2.utils.Jwt;
 import dev.tuzserik.business.logic.of.software.systems.lab2.services.UserService;
 import dev.tuzserik.business.logic.of.software.systems.lab2.model.User;
 import dev.tuzserik.business.logic.of.software.systems.lab2.requests.UserRegistrationRequest;
@@ -23,7 +23,7 @@ public class UserController {
         if (userService.verifyUser(username, password)) {
             User user = userService.findUserByUsername(username);
             HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.set(HttpHeaders.AUTHORIZATION, JwtUtils.encodeUsernameAndRole(user.getUsername(), user.getRole().name()));
+            httpHeaders.set(HttpHeaders.AUTHORIZATION, Jwt.encodeUsernameAndRole(user.getUsername(), user.getRole().name()));
 
             return new ResponseEntity<>(
                     new UserInformationResponse(user.getUsername(), user.getRole(),
