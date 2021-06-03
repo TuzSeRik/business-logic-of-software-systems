@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.UUID;
 
 @AllArgsConstructor @Data
-public class CartStatusResponse {
+public class CartInformationResponse {
     private UUID cartId;
     private Collection<UUID> items;
 }

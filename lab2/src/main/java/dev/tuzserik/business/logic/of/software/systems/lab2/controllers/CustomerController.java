@@ -1,44 +1,38 @@
 package dev.tuzserik.business.logic.of.software.systems.lab2.controllers;
 
-import dev.tuzserik.business.logic.of.software.systems.lab2.model.Item;
-import dev.tuzserik.business.logic.of.software.systems.lab2.model.User;
-import dev.tuzserik.business.logic.of.software.systems.lab2.requests.OrderCreatingRequest;
-import dev.tuzserik.business.logic.of.software.systems.lab2.responses.CartStatusResponse;
-import dev.tuzserik.business.logic.of.software.systems.lab2.responses.CatalogListResponse;
-import dev.tuzserik.business.logic.of.software.systems.lab2.responses.OrderInformationResponse;
-import dev.tuzserik.business.logic.of.software.systems.lab2.services.CatalogService;
-import dev.tuzserik.business.logic.of.software.systems.lab2.services.OrderService;
-import dev.tuzserik.business.logic.of.software.systems.lab2.services.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import java.util.UUID;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.time.ZonedDateTime;
+import dev.tuzserik.business.logic.of.software.systems.lab2.services.*;
+import dev.tuzserik.business.logic.of.software.systems.lab2.model.*;
+import dev.tuzserik.business.logic.of.software.systems.lab2.requests.OrderCreatingRequest;
+import dev.tuzserik.business.logic.of.software.systems.lab2.responses.*;
 
-@AllArgsConstructor @RestController @RequestMapping("/api/user")
+@AllArgsConstructor @RestController @RequestMapping("/api/customer")
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class CustomerController {
     private final CatalogService catalogService;
+    private final CartService cartService;
     private final OrderService orderService;
     private final UserService userService;
 
     @GetMapping("/catalog")
-    ResponseEntity<CatalogListResponse> getItemsByAttributes(@RequestParam Map<String, String> allRequestParams) {
+    ResponseEntity<CatalogInformationResponse> getItemsByAttributes(@RequestParam Map<String, String> allRequestParams) {
         if (catalogService.verifyAttributes(
-                // Type of an Item
                 allRequestParams.remove("type"),
-                // Attributes of an Item
                 allRequestParams.keySet().stream().map(UUID::fromString).collect(Collectors.toSet())
             )
         ) {
             return new ResponseEntity<>(
-                    new CatalogListResponse(
+                    new CatalogInformationResponse(
                             catalogService.findAllAppropriateItems(allRequestParams)
-                            .stream().map(Item::getId).collect(Collectors.toList())
+                                .stream().map(Item::getId).collect(Collectors.toList())
                     ),
                     HttpStatus.OK
             );
@@ -48,54 +42,137 @@ public class CustomerController {
     }
 
     @GetMapping("/cart/new")
-    ResponseEntity<CartStatusResponse> getNewCart() {
-        // TODO Method need to create new empty cart in database and return it ID and items in it
-        return null;
-    }
+    ResponseEntity<CartInformationResponse> getNewCart() {
+        Cart cart = cartService.createNewCart();
 
-    @GetMapping("/cart")
-    ResponseEntity<CartStatusResponse> getCart(@RequestParam UUID cartId) {
-        // TODO We need to verify cart (if like in getItemsByAttributes) and it it is present
-        // TODO return it's items (like now). Otherwise, return BAD_REQUEST
         return new ResponseEntity<>(
-                new CartStatusResponse(
-                        catalogService.checkCartPresence(cartId), catalogService.getCartItems(cartId)
+                new CartInformationResponse(
+                        cart.getId(), cart.getItemIds()
                 ),
                 HttpStatus.OK
         );
     }
 
+    @GetMapping("/cart")
+    ResponseEntity<CartInformationResponse> getCart(@RequestParam UUID cartId) {
+        Cart cart = cartService.getCartById(cartId);
+
+        if (cart != null) {
+            return new ResponseEntity<>(
+                    new CartInformationResponse(
+                           cart.getId(), cart.getItemIds()
+                    ),
+                    HttpStatus.OK
+            );
+        }
+       else
+           return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
     @PostMapping("/cart/add")
-    ResponseEntity<CartStatusResponse> addToCart(@RequestParam UUID itemId) {
-        // TODO Method should verify presence of item in database and if check is succeeded
-        // TODO it should add it to the cart
-        return null;
+    ResponseEntity<CartInformationResponse> addToCart(@RequestParam UUID cartId, @RequestParam UUID itemId) {
+        Cart cart = cartService.getCartById(cartId);
+        Item item = catalogService.getItemById(itemId);
+
+        if (cart != null && item != null) {
+            cart = cartService.saveCart(cart.addItemId(item.getId()));
+
+            return new ResponseEntity<>(
+                    new CartInformationResponse(
+                            cart.getId(), cart.getItemIds()
+                    ),
+                    HttpStatus.OK
+            );
+        }
+        else
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/cart/delete")
-    ResponseEntity<CartStatusResponse> deleteFromCart(@RequestParam UUID itemId) {
-        // TODO Method should verify presence of item in a cart and on success delete it from there
-        return null;
+    ResponseEntity<CartInformationResponse> deleteFromCart(@RequestParam UUID cartId, @RequestParam UUID itemId) {
+        Cart cart = cartService.getCartById(cartId);
+
+        if (cart != null && cart.getItemIds().contains(itemId)) {
+            cart = cartService.saveCart(cart.deleteItemId(itemId));
+
+            return new ResponseEntity<>(
+                    new CartInformationResponse(
+                            cart.getId(), cart.getItemIds()
+                    ),
+                    HttpStatus.OK
+            );
+        }
+        else
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping("/cart")
-    ResponseEntity<CartStatusResponse> cleanCart(@RequestParam UUID cartId) {
-        // TODO Method should delete everything from cart
-        return null;
+    ResponseEntity<CartInformationResponse> cleanCart(@RequestParam UUID cartId) {
+        Cart cart = cartService.getCartById(cartId);
+
+        if (cart != null) {
+            cart = cartService.deleteCart(cart);
+
+            return new ResponseEntity<>(
+                    new CartInformationResponse(
+                            cart.getId(), cart.getItemIds()
+                    ),
+                    HttpStatus.OK
+            );
+        }
+        else
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/order")
+    ResponseEntity<OrderInformationResponse> getOrderInformation(@RequestParam UUID orderId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userService.findUserByUsername(username);
+        Order order = orderService.getOrderById(orderId);
+
+        if (order != null && order.getBuyer().equals(user)) {
+            return new ResponseEntity<>(
+                    new OrderInformationResponse(
+                            order.getId(), order.getItemsIds(),
+                            order.getPaymentType(), order.getDelivery(),
+                            order.getStatus(), order.getTimestamp()
+                    ),
+                    HttpStatus.OK
+            );
+        }
+        else
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/order")
     ResponseEntity<OrderInformationResponse> createOrder(@RequestBody OrderCreatingRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userService.findUserByUsername(username);
+        Cart cart = cartService.getCartById(request.getCartId());
 
-        if (user != null) {
-            // TODO We should create order with corresponding parameters
-            // TODO from request and return information about it
-            // TODO Should be noted, that we also discussed payment status parameter add to the order
-            return null;
+        if (user != null && cart != null) {
+            Order order = orderService.saveOrder(
+                    new Order(
+                            UUID.randomUUID(),
+                            user,
+                            cart.getItemIds(),
+                            request.getPaymentType(),
+                            request.getDelivery(),
+                            Order.Status.CREATED,
+                            ZonedDateTime.now()
+                    )
+            );
+
+            return new ResponseEntity<>(
+                    new OrderInformationResponse(
+                            order.getId(), order.getItemsIds(),
+                            order.getPaymentType(), order.getDelivery(),
+                            order.getStatus(), order.getTimestamp()
+                    ),
+                    HttpStatus.OK
+            );
         }
         else
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 }

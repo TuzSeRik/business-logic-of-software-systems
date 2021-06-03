@@ -4,13 +4,24 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Data;
 import javax.persistence.*;
-import java.util.Collection;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.UUID;
 
 @AllArgsConstructor @NoArgsConstructor @Data @Entity @Table(name = "CARTS")
 public class Cart {
-    @Id
+    @Id @GeneratedValue
     private UUID id;
     @ElementCollection
-    private Collection<UUID> itemIds;
+    private Set<UUID> itemIds = new HashSet<>();
+
+    public Cart addItemId(UUID itemId) {
+        itemIds.add(itemId);
+        return this;
+    }
+
+    public Cart deleteItemId(UUID itemId) {
+        itemIds.remove(itemId);
+        return this;
+    }
 }

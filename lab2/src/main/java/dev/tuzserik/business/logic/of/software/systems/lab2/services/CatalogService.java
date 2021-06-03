@@ -4,20 +4,20 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
 import java.util.*;
+import dev.tuzserik.business.logic.of.software.systems.lab2.repositories.*;
 import dev.tuzserik.business.logic.of.software.systems.lab2.model.Item;
-import dev.tuzserik.business.logic.of.software.systems.lab2.repositories.AttributeRepository;
-import dev.tuzserik.business.logic.of.software.systems.lab2.repositories.CartRepository;
-import dev.tuzserik.business.logic.of.software.systems.lab2.model.Cart;
-import dev.tuzserik.business.logic.of.software.systems.lab2.repositories.ParameterRepository;
 import dev.tuzserik.business.logic.of.software.systems.lab2.model.Parameter;
-import dev.tuzserik.business.logic.of.software.systems.lab2.repositories.TypeRepository;
 
 @AllArgsConstructor @Service
 public class CatalogService {
+    private final ItemRepository itemRepository;
     private final TypeRepository typeRepository;
     private final AttributeRepository attributeRepository;
     private final ParameterRepository parameterRepository;
-    private final CartRepository cartRepository;
+
+    public Item getItemById(UUID itemId) {
+        return itemRepository.getOne(itemId);
+    }
 
     public boolean verifyAttributes(String type, Set<UUID> attrValue) {
         return attrValue.stream()
@@ -25,31 +25,13 @@ public class CatalogService {
                        .contains(typeRepository.getOne(UUID.fromString(type)))).count() == attrValue.size();
     }
 
-    public Collection<Item> findAllAppropriateItems(Map<String, String> attrValue) {
+    public Set<Item> findAllAppropriateItems(Map<String, String> attrValue) {
         return parameterRepository.findAllByAttributeIn(
-                   attributeRepository.findAllById(attrValue.keySet().stream().map(UUID::fromString)
-                           .collect(Collectors.toSet())))
-                 .stream().filter(o -> attrValue.get(o.getAttribute().getId().toString()).equals(o.getValue()))
-                     .map(Parameter::getItem).collect(Collectors.toSet());
-    }
-
-    public UUID checkCartPresence(UUID cartId) {
-        if (cartId.equals(new UUID(0, 0)))
-            return UUID.randomUUID();
-        return cartId;
-    }
-
-    public Collection<UUID> getCartItems(UUID id) {
-        if (!cartRepository.existsById(id))
-            return cartRepository.getOne(new UUID(0, 0)).getItemIds();
-        return cartRepository.getOne(id).getItemIds();
-    }
-
-    public Collection<UUID> updateCart(UUID id, Collection<UUID> items) {
-        if (!cartRepository.existsById(id))
-            cartRepository.save(new Cart(id, new ArrayList<>()));
-        return cartRepository.save(
-                    cartRepository.getOne(id).setItemIds(items))
-                .getItemIds();
+                   attributeRepository.findAllById(
+                           attrValue.keySet().stream().map(UUID::fromString)
+                            .collect(Collectors.toSet())
+                   )
+        ).stream().filter(o -> attrValue.get(o.getAttribute().getId().toString()).equals(o.getValue()))
+                .map(Parameter::getItem).collect(Collectors.toSet());
     }
 }

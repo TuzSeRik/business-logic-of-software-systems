@@ -6,6 +6,6 @@ import java.util.Collection;
 import java.util.UUID;
 
 @AllArgsConstructor @Data
-public class CatalogListResponse {
+public class CatalogInformationResponse {
     private Collection<UUID> items;
 }
