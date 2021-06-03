@@ -29,6 +29,7 @@ public class Security extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/customer/cart/**").permitAll()
                 .antMatchers("/api/moderator/**").hasRole("MODERATOR")
                 .antMatchers("/api/administrator/**").hasRole("ADMINISTRATOR")
+                .antMatchers("/api/root/**").hasRole("ROOT")
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authenticationProvider(abstractJaasAuthenticationProvider())

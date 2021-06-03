@@ -6,7 +6,7 @@ import dev.tuzserik.business.logic.of.software.systems.lab2.model.User;
 
 @AllArgsConstructor @Data
 public class UserInformationResponse {
-    private String login;
+    private String username;
     private User.Role role;
     private String givenName;
     private String familyName;

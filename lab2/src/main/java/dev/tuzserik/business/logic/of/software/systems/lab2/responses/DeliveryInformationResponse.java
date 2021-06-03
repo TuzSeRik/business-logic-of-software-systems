@@ -2,18 +2,14 @@ package dev.tuzserik.business.logic.of.software.systems.lab2.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.time.ZonedDateTime;
-import java.util.Collection;
 import java.util.UUID;
-import dev.tuzserik.business.logic.of.software.systems.lab2.model.Order;
+import java.time.ZonedDateTime;
 import dev.tuzserik.business.logic.of.software.systems.lab2.model.Delivery;
 
 @AllArgsConstructor @Data
-public class OrderStatusResponse {
+public class DeliveryInformationResponse {
     private UUID id;
-    private Collection<UUID> items;
-    private Order.PaymentType paymentType;
-    private Delivery delivery;
-    private Order.Status status;
+    private Delivery.Type type;
+    private Delivery.Status status;
     private ZonedDateTime timestamp;
 }

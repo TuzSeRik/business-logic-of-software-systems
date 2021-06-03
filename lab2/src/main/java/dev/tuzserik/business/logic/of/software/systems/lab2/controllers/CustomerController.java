@@ -5,7 +5,7 @@ import dev.tuzserik.business.logic.of.software.systems.lab2.model.User;
 import dev.tuzserik.business.logic.of.software.systems.lab2.requests.OrderCreatingRequest;
 import dev.tuzserik.business.logic.of.software.systems.lab2.responses.CartStatusResponse;
 import dev.tuzserik.business.logic.of.software.systems.lab2.responses.CatalogListResponse;
-import dev.tuzserik.business.logic.of.software.systems.lab2.responses.OrderStatusResponse;
+import dev.tuzserik.business.logic.of.software.systems.lab2.responses.OrderInformationResponse;
 import dev.tuzserik.business.logic.of.software.systems.lab2.services.CatalogService;
 import dev.tuzserik.business.logic.of.software.systems.lab2.services.OrderService;
 import dev.tuzserik.business.logic.of.software.systems.lab2.services.UserService;
@@ -85,7 +85,7 @@ public class CustomerController {
     }
 
     @PostMapping("/order")
-    ResponseEntity<OrderStatusResponse> createOrder(@RequestBody OrderCreatingRequest request) {
+    ResponseEntity<OrderInformationResponse> createOrder(@RequestBody OrderCreatingRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userService.findUserByUsername(username);
 

@@ -19,7 +19,7 @@ public class AdministratorController {
     private final DeliveryService deliveryService;
 
     @PostMapping("/delivery/submit")
-    ResponseEntity<DeliveryStatusResponse> submitDelivery(@RequestParam UUID deliveryId){
+    ResponseEntity<DeliveryInformationResponse> submitDelivery(@RequestParam UUID deliveryId){
         Delivery delivery = deliveryService.getDeliveryById(deliveryId);
 
         if (delivery != null) {
@@ -29,7 +29,7 @@ public class AdministratorController {
 
                 if (orderService.submitOrderPaymentWithDelivery(delivery))
                     return new ResponseEntity<>(
-                                new DeliveryStatusResponse(
+                                new DeliveryInformationResponse(
                                         delivery.getId(), delivery.getType(),
                                         delivery.getStatus(), delivery.getDate()
                                 ),
@@ -43,13 +43,13 @@ public class AdministratorController {
     }
 
     @PostMapping("/delivery/cancel")
-    ResponseEntity<DeliveryStatusResponse> cancelDelivery(@RequestParam UUID deliveryId) {
+    ResponseEntity<DeliveryInformationResponse> cancelDelivery(@RequestParam UUID deliveryId) {
         Delivery delivery = deliveryService.getDeliveryById(deliveryId);
 
         if (delivery != null) {
             if (delivery.getStatus() != Delivery.Status.AWAITING) {
                 return new ResponseEntity<>(
-                        new DeliveryStatusResponse(
+                        new DeliveryInformationResponse(
                                 delivery.getId(), delivery.getType(),
                                 delivery.getStatus(), delivery.getDate()
                         ),
@@ -64,7 +64,7 @@ public class AdministratorController {
     }
 
     @PostMapping("/order/submit")
-    ResponseEntity<OrderStatusResponse> submitOrder(@RequestParam UUID orderId){
+    ResponseEntity<OrderInformationResponse> submitOrder(@RequestParam UUID orderId){
         Order order = orderService.getOrderById(orderId);
 
         if (order != null) {
@@ -76,7 +76,7 @@ public class AdministratorController {
                 order = orderService.saveOrder(order.setStatus(Order.Status.SUBMITTED));
 
                 return new ResponseEntity<>(
-                        new OrderStatusResponse(
+                        new OrderInformationResponse(
                                 order.getId(), order.getItemsIds(),
                                 order.getPaymentType(), order.getDelivery(),
                                 order.getStatus(), order.getTimestamp()),
@@ -91,7 +91,7 @@ public class AdministratorController {
     }
 
     @GetMapping("/order/cancel")
-    ResponseEntity<OrderStatusResponse> cancelOrder(@RequestParam UUID orderId){
+    ResponseEntity<OrderInformationResponse> cancelOrder(@RequestParam UUID orderId){
         Order order = orderService.getOrderById(orderId);
 
         if (order != null) {
@@ -100,7 +100,7 @@ public class AdministratorController {
                 order = orderService.saveOrder(order.setStatus(Order.Status.CANCELED));
 
                 return new ResponseEntity<>(
-                        new OrderStatusResponse(
+                        new OrderInformationResponse(
                                 order.getId(), order.getItemsIds(),
                                 order.getPaymentType(), order.getDelivery(),
                                 order.getStatus(), order.getTimestamp()),
