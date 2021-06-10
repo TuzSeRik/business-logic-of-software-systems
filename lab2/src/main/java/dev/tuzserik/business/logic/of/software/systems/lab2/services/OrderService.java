@@ -24,17 +24,3 @@ public class OrderService {
         return true;
     }
 }
-
-//    public Order createNewOrder(UUID id, UUID cartId, Delivery delivery) {
-//        delivery = deliveryRepository.save(delivery);
-//        return orderRepository.save(
-//            new Order(
-//                UUID.randomUUID(),
-//                userRepository.getOne(id),
-//                new ArrayList<>(cartRepository.getOne(cartId).getItemIds()),
-//                ZonedDateTime.now(),
-//                Order.Status.CREATED,
-//                delivery
-//            )
-//        );
-//    }

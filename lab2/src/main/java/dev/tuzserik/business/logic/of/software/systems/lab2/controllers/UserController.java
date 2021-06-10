@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import dev.tuzserik.business.logic.of.software.systems.lab2.utils.Jwt;
 import dev.tuzserik.business.logic.of.software.systems.lab2.services.UserService;
 import dev.tuzserik.business.logic.of.software.systems.lab2.model.User;
-import dev.tuzserik.business.logic.of.software.systems.lab2.requests.UserRegistrationRequest;
+import dev.tuzserik.business.logic.of.software.systems.lab2.requests.UserCreationRequest;
 import dev.tuzserik.business.logic.of.software.systems.lab2.responses.UserInformationResponse;
 
 @AllArgsConstructor @RestController @RequestMapping("/api/user")
@@ -23,7 +23,10 @@ public class UserController {
         if (userService.verifyUser(username, password)) {
             User user = userService.findUserByUsername(username);
             HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.set(HttpHeaders.AUTHORIZATION, Jwt.encodeUsernameAndRole(user.getUsername(), user.getRole().name()));
+            httpHeaders.set(HttpHeaders.AUTHORIZATION, Jwt.encodeUsernameAndRole(
+                    user.getUsername(),
+                    user.getRole().name())
+            );
 
             return new ResponseEntity<>(
                     new UserInformationResponse(user.getUsername(), user.getRole(),
@@ -33,12 +36,27 @@ public class UserController {
             );
         }
         else
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping("/")
-    ResponseEntity<UserInformationResponse> addUser(@RequestBody UserRegistrationRequest request) {
-        User user = userService.saveUser(
+    @GetMapping("")
+    ResponseEntity<UserInformationResponse> getUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userService.findUserByUsername(username);
+
+        if (user != null) {
+            return new ResponseEntity<>(new UserInformationResponse(
+                    user.getUsername(), user.getRole(), user.getGivenName(), user.getFamilyName()),
+                    HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("")
+    ResponseEntity<UserInformationResponse> addUser(@RequestBody UserCreationRequest request) {
+        User user = userService.saveUserForAFirstTime(
                 new User()
                 .setUsername(request.getUsername())
                 .setPassword(request.getPassword())
@@ -50,20 +68,5 @@ public class UserController {
         return new ResponseEntity<>(new UserInformationResponse(
                 user.getUsername(), user.getRole(), user.getGivenName(), user.getFamilyName()),
                 HttpStatus.OK);
-    }
-
-    @GetMapping("/")
-    ResponseEntity<UserInformationResponse> getUser() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userService.findUserByUsername(username);
-
-        if (user != null) {
-            return new ResponseEntity<>(new UserInformationResponse(
-                    user.getUsername(), user.getRole(), user.getGivenName(), user.getFamilyName()),
-                    HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
     }
 }

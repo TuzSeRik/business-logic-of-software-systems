@@ -19,8 +19,12 @@ public class UserService {
         return findUserByUsername(username) != null;
     }
 
-    public User saveUser(User user) {
+    public User saveUserForAFirstTime(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
+    }
+
+    public User saveUser(User user) {
         return userRepository.save(user);
     }
 
@@ -29,6 +33,7 @@ public class UserService {
 
         if (user != null)
             return passwordEncoder.matches(password, user.getPassword());
+
         return false;
     }
 

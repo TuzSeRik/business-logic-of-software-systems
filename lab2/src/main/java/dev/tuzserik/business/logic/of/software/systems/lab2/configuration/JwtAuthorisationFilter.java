@@ -2,9 +2,9 @@ package dev.tuzserik.business.logic.of.software.systems.lab2.configuration;
 
 import io.jsonwebtoken.*;
 import org.springframework.lang.NonNull;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,8 +24,9 @@ public class JwtAuthorisationFilter extends OncePerRequestFilter {
             if (authenticationHeader != null && authenticationHeader.startsWith("Bearer ")) {
                 SecurityContextHolder.getContext().setAuthentication(
                         new UsernamePasswordAuthenticationToken(
-                                Jwt.decodeUsernameAndRole(authenticationHeader.replace("Bearer ", "")).getFirst(),
-                                null,
+                                Jwt.decodeUsernameAndRole(
+                                        authenticationHeader.replace("Bearer ", "")).getFirst(),
+                                        null,
                                 Collections.singleton(
                                         new SimpleGrantedAuthority(
                                                 (String) Jwt

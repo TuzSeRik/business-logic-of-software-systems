@@ -1,5 +1,10 @@
 package dev.tuzserik.business.logic.of.software.systems.lab2.controllers;
 
+import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+@AllArgsConstructor @RestController @RequestMapping("/api/moderator")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class ModeratorController {
-    // TODO This controller should contain all functionality about adding items, attributes and type into catalog
+
 }

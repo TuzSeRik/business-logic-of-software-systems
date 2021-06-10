@@ -18,8 +18,7 @@ public class Jwt {
                    .claim("role", role)
                    .setExpiration(new Date(System.currentTimeMillis() + 864000000))
                    .signWith(jwtSecret)
-                   .compact()
-               ;
+                   .compact();
     }
 
     public static Pair<String, Object> decodeUsernameAndRole(String jwtToken) {
@@ -28,9 +27,7 @@ public class Jwt {
                             .setSigningKey(jwtSecret)
                             .build()
                             .parseClaimsJws(jwtToken)
-                            .getBody()
-                        ;
-
+                            .getBody();
 
         return Pair.of(claims.getSubject(), claims.get("role"));
     }

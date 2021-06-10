@@ -21,9 +21,4 @@ public class CartService {
     public Cart saveCart(Cart cart){
         return cartRepository.save(cart);
     }
-
-    public Cart deleteCart(Cart cart) {
-        cartRepository.delete(cart);
-        return cart;
-    }
 }

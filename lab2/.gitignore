@@ -1,4 +1,5 @@
-.idea
-.mvn
+.idea/
+.mvn/
 target/
+transaction-logs/
 *.iml

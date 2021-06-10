@@ -5,8 +5,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import dev.tuzserik.business.logic.of.software.systems.lab2.model.User;
 import dev.tuzserik.business.logic.of.software.systems.lab2.services.UserService;
+import dev.tuzserik.business.logic.of.software.systems.lab2.model.User;
 
 @RequiredArgsConstructor @Component
 public class Initialisation implements ApplicationListener<ContextRefreshedEvent> {
@@ -22,7 +22,7 @@ public class Initialisation implements ApplicationListener<ContextRefreshedEvent
             administrator.setRole(User.Role.ROLE_ROOT);
             administrator.setGivenName("Dmitriy");
             administrator.setFamilyName("Borisovich");
-            userService.saveUser(administrator);
+            userService.saveUserForAFirstTime(administrator);
 
             alreadySetup = true;
         }

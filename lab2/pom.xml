@@ -5,7 +5,7 @@
 
     <groupId>dev.tuzserik.business.logic.of.software.systems</groupId>
     <artifactId>lab2</artifactId>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
     <name>lab2</name>
     <description>Second lab work from Business Logic of Software Systems course</description>
 
@@ -36,6 +36,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-rest</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jta-atomikos</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>

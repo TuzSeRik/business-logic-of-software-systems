@@ -1,17 +1,19 @@
 package dev.tuzserik.business.logic.of.software.systems.lab2.controllers;
 
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-import java.util.UUID;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.UUID;
 import java.time.ZonedDateTime;
 import dev.tuzserik.business.logic.of.software.systems.lab2.services.*;
 import dev.tuzserik.business.logic.of.software.systems.lab2.model.*;
-import dev.tuzserik.business.logic.of.software.systems.lab2.requests.OrderCreatingRequest;
+import dev.tuzserik.business.logic.of.software.systems.lab2.requests.*;
 import dev.tuzserik.business.logic.of.software.systems.lab2.responses.*;
 
 @AllArgsConstructor @RestController @RequestMapping("/api/customer")
@@ -20,6 +22,7 @@ public class CustomerController {
     private final CatalogService catalogService;
     private final CartService cartService;
     private final OrderService orderService;
+    private final DeliveryService deliveryService;
     private final UserService userService;
 
     @GetMapping("/catalog")
@@ -69,7 +72,7 @@ public class CustomerController {
            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping("/cart/add")
+    @PostMapping("/cart/add") @Transactional
     ResponseEntity<CartInformationResponse> addToCart(@RequestParam UUID cartId, @RequestParam UUID itemId) {
         Cart cart = cartService.getCartById(cartId);
         Item item = catalogService.getItemById(itemId);
@@ -88,7 +91,7 @@ public class CustomerController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping("/cart/delete")
+    @PostMapping("/cart/delete") @Transactional
     ResponseEntity<CartInformationResponse> deleteFromCart(@RequestParam UUID cartId, @RequestParam UUID itemId) {
         Cart cart = cartService.getCartById(cartId);
 
@@ -111,7 +114,7 @@ public class CustomerController {
         Cart cart = cartService.getCartById(cartId);
 
         if (cart != null) {
-            cart = cartService.deleteCart(cart);
+            cart = cartService.saveCart(cart.setItemIds(new ArrayList<>()));
 
             return new ResponseEntity<>(
                     new CartInformationResponse(
@@ -144,20 +147,27 @@ public class CustomerController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping("/order")
-    ResponseEntity<OrderInformationResponse> createOrder(@RequestBody OrderCreatingRequest request) {
+    @PostMapping("/order") @Transactional
+    ResponseEntity<OrderInformationResponse> createOrder(@RequestBody OrderCreationRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userService.findUserByUsername(username);
         Cart cart = cartService.getCartById(request.getCartId());
 
         if (user != null && cart != null) {
+            Delivery delivery = deliveryService.saveDelivery(
+                    new Delivery()
+                            .setType(request.getType())
+                            .setStatus(request.getStatus())
+                            .setDate(ZonedDateTime.now())
+            );
+
             Order order = orderService.saveOrder(
                     new Order(
                             UUID.randomUUID(),
                             user,
                             cart.getItemIds(),
                             request.getPaymentType(),
-                            request.getDelivery(),
+                            delivery,
                             Order.Status.CREATED,
                             ZonedDateTime.now()
                     )

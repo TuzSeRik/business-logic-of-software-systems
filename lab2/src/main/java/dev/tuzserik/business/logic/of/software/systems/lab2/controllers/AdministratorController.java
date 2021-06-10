@@ -1,6 +1,7 @@
 package dev.tuzserik.business.logic.of.software.systems.lab2.controllers;
 
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,7 @@ public class AdministratorController {
     private final OrderService orderService;
     private final DeliveryService deliveryService;
 
-    @PostMapping("/delivery/submit")
+    @PostMapping("/delivery/submit") @Transactional
     ResponseEntity<DeliveryInformationResponse> submitDelivery(@RequestParam UUID deliveryId){
         Delivery delivery = deliveryService.getDeliveryById(deliveryId);
 
@@ -42,12 +43,14 @@ public class AdministratorController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping("/delivery/cancel")
+    @PostMapping("/delivery/cancel") @Transactional
     ResponseEntity<DeliveryInformationResponse> cancelDelivery(@RequestParam UUID deliveryId) {
         Delivery delivery = deliveryService.getDeliveryById(deliveryId);
 
         if (delivery != null) {
             if (delivery.getStatus() != Delivery.Status.AWAITING) {
+                deliveryService.saveDelivery(delivery.setStatus(Delivery.Status.CANCELED));
+
                 return new ResponseEntity<>(
                         new DeliveryInformationResponse(
                                 delivery.getId(), delivery.getType(),
@@ -63,7 +66,7 @@ public class AdministratorController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping("/order/submit")
+    @PostMapping("/order/submit") @Transactional
     ResponseEntity<OrderInformationResponse> submitOrder(@RequestParam UUID orderId){
         Order order = orderService.getOrderById(orderId);
 
@@ -90,7 +93,7 @@ public class AdministratorController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping("/order/cancel")
+    @GetMapping("/order/cancel") @Transactional
     ResponseEntity<OrderInformationResponse> cancelOrder(@RequestParam UUID orderId){
         Order order = orderService.getOrderById(orderId);
 
