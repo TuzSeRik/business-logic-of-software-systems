@@ -3,11 +3,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>dev.tuzserik.business.logic.of.software.systems</groupId>
-    <artifactId>lab3</artifactId>
+    <groupId>dev.tuzserik.business.logic.of.software.systems.lab3</groupId>
+    <artifactId>processor</artifactId>
     <version>0.0.1</version>
-    <name>lab3</name>
-    <description>Second lab work from Business Logic of Software Systems course</description>
+    <name>processor</name>
+    <description>Third lab work processor module from Business Logic of Software Systems course</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
