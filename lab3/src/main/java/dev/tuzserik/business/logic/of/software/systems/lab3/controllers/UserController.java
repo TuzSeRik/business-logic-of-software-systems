@@ -1,11 +1,10 @@
 package dev.tuzserik.business.logic.of.software.systems.lab3.controllers;
 
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.*;
 import dev.tuzserik.business.logic.of.software.systems.lab3.utils.Jwt;
 import dev.tuzserik.business.logic.of.software.systems.lab3.services.UserService;
 import dev.tuzserik.business.logic.of.software.systems.lab3.model.User;
@@ -54,13 +53,13 @@ public class UserController {
         }
     }
 
-    @PostMapping("")
+    @PostMapping("") @Transactional
     ResponseEntity<UserInformationResponse> addUser(@RequestBody UserCreationRequest request) {
         User user = userService.saveUserForAFirstTime(
                 new User()
                 .setUsername(request.getUsername())
                 .setPassword(request.getPassword())
-                .setRole(User.Role.ROLE_USER)
+                .setRole(User.Role.ROLE_CUSTOMER)
                 .setGivenName(request.getGivenName())
                 .setFamilyName(request.getFamilyName())
         );

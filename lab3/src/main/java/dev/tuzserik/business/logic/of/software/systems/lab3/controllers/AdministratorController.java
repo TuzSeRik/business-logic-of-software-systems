@@ -3,8 +3,7 @@ package dev.tuzserik.business.logic.of.software.systems.lab3.controllers;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.*;
 import java.util.UUID;
 import java.time.ZonedDateTime;
 import dev.tuzserik.business.logic.of.software.systems.lab3.responses.*;
@@ -80,7 +79,7 @@ public class AdministratorController {
 
                 return new ResponseEntity<>(
                         new OrderInformationResponse(
-                                order.getId(), order.getItemsIds(),
+                                order.getId(), order.getItems(),
                                 order.getPaymentType(), order.getDelivery(),
                                 order.getStatus(), order.getTimestamp()),
                         HttpStatus.OK
@@ -104,7 +103,7 @@ public class AdministratorController {
 
                 return new ResponseEntity<>(
                         new OrderInformationResponse(
-                                order.getId(), order.getItemsIds(),
+                                order.getId(), order.getItems(),
                                 order.getPaymentType(), order.getDelivery(),
                                 order.getStatus(), order.getTimestamp()),
                         HttpStatus.OK

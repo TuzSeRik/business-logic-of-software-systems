@@ -4,22 +4,23 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Data;
 import javax.persistence.*;
-import java.util.*;
+import java.util.UUID;
+import java.util.List;
 
 @AllArgsConstructor @NoArgsConstructor @Data @Entity @Table(name = "CARTS")
 public class Cart {
     @Id @GeneratedValue
     private UUID id;
-    @ElementCollection
-    private Collection<UUID> itemIds = new ArrayList<>();
+    @ManyToMany
+    private List<Item> items;
 
-    public Cart addItemId(UUID itemId) {
-        itemIds.add(itemId);
+    public Cart addItem(Item item) {
+        items.add(item);
         return this;
     }
 
-    public Cart deleteItemId(UUID itemId) {
-        itemIds.remove(itemId);
+    public Cart deleteItem(Item item) {
+        items.remove(item);
         return this;
     }
 }

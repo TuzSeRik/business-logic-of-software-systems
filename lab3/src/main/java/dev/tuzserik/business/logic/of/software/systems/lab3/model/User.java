@@ -15,9 +15,10 @@ public class User {
     private String username;
     @Column(nullable = false) @JsonIgnore
     private String password;
+    @Column(nullable = false)
     private Role role;
-    private String givenName;
-    private String familyName;
+    private String givenName = "Default";
+    private String familyName = "User";
 
     public enum Role {
         ROLE_USER,

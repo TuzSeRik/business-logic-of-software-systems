@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Data;
 import javax.persistence.*;
 import java.util.UUID;
-import java.util.Collection;
+import java.util.List;
 import java.time.ZonedDateTime;
 
 @AllArgsConstructor @NoArgsConstructor @Data @Entity @Table(name = "ORDERS")
@@ -14,8 +14,8 @@ public class Order {
     private UUID id;
     @ManyToOne
     private User buyer;
-    @ElementCollection
-    private Collection<UUID> itemsIds;
+    @ManyToMany
+    private List<Item> items;
     private PaymentType paymentType;
     @OneToOne
     private Delivery delivery;

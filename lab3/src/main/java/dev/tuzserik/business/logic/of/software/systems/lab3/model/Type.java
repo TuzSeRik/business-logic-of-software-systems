@@ -5,13 +5,14 @@ import lombok.NoArgsConstructor;
 import lombok.Data;
 import javax.persistence.*;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.UUID;
 
 @AllArgsConstructor @NoArgsConstructor @Data @Entity @Table(name = "TYPES")
 public class Type {
     @Id @GeneratedValue
     private UUID id;
+    @Column(unique = true)
+    private String name;
     @ManyToMany
-    private Set<Attribute> attributes = new HashSet<>();
+    private Set<Attribute> attributes;
 }

@@ -14,6 +14,5 @@ public class Parameter {
     private Item item;
     @ManyToOne
     private Attribute attribute;
-    private String name;
     private String value;
 }
