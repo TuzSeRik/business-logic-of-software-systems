@@ -10,5 +10,6 @@ import dev.tuzserik.business.logic.of.software.systems.lab3.model.Parameter;
 public class ItemInformationResponse {
     private UUID id;
     private String name;
+    private UUID typeId;
     private Set<Parameter> parameters;
 }

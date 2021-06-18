@@ -21,8 +21,4 @@ public class AttributeService {
     public Set<Attribute> saveAttributes(Set<Attribute> attributes) {
         return new HashSet<>(attributeRepository.saveAll(attributes));
     }
-
-    public Set<Attribute> findAttributesByName(Set<String> names) {
-        return attributeRepository.findAllByNameIn(names);
-    }
 }

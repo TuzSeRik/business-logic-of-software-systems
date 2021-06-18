@@ -1,5 +1,5 @@
 server:
-  port: 22976
+  port: 22977
 
 spring:
   datasource:
@@ -11,7 +11,3 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-
-  data:
-    rest:
-      base-path: /api

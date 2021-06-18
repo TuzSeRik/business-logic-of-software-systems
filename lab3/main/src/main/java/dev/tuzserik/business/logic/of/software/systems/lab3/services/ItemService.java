@@ -23,10 +23,10 @@ public class ItemService {
         return itemRepository.save(item);
     }
 
-    public boolean verifyAttributes(String type, Set<UUID> attrValue) {
-        return attrValue.stream()
+    public boolean verifyAttributes(String type, Set<UUID> attrIds) {
+        return attrIds.stream()
                    .filter(a -> attributeRepository.getOne(a).getTypes()
-                       .contains(typeRepository.getOne(UUID.fromString(type)))).count() == attrValue.size();
+                       .contains(typeRepository.getOne(UUID.fromString(type)))).count() == attrIds.size();
     }
 
     public Set<Item> findAllAppropriateItems(Map<String, String> parameters) {

@@ -22,12 +22,12 @@ public class TypeService {
     }
 
     public Type findTypeByNameAndAttributesNames(String typeName, Set<String> attributeNames) {
-        Set<Attribute> attributes =  attributeRepository.findAllByNameIn(attributeNames);
+        Type type = typeRepository.getTypeByName(typeName);
 
-        return typeRepository.findTypeByNameAndAttributesIn(
-                typeName,
-                Collections.singleton(Optional.ofNullable(attributes).orElse(Collections.emptySet()))
-        );
+        if (type != null && type.getAttributes().equals(attributeRepository.findAllByNameIn(attributeNames)))
+            return type;
+        else
+            return null;
     }
 
     public boolean verifyTypePresence(UUID typeId, Set<UUID> attributesIds) {

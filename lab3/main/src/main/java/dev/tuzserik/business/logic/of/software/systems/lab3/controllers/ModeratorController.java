@@ -10,7 +10,7 @@ import dev.tuzserik.business.logic.of.software.systems.lab3.services.*;
 import dev.tuzserik.business.logic.of.software.systems.lab3.model.*;
 import dev.tuzserik.business.logic.of.software.systems.lab3.requests.*;
 import dev.tuzserik.business.logic.of.software.systems.lab3.responses.*;
-// TODO Need to be debugged
+
 @AllArgsConstructor @RestController @RequestMapping("/api/moderator")
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class ModeratorController {
@@ -41,7 +41,40 @@ public class ModeratorController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping("/catalog/type/existing/item/add") @Transactional
+    @PostMapping("/type/new/item/add") @Transactional
+    ResponseEntity<ItemInformationResponse> addItemWithNewType(@RequestBody NewTypeItemCreationRequest request) {
+        Set<Attribute> attributes = request.getParameters().keySet().stream()
+                                            .map(n -> new Attribute().setName(n))
+                                            .collect(Collectors.toSet());
+        attributes = attributeService.saveAttributes(attributes);
+        final Type type = typeService.saveType(new Type().setName(request.getTypeName()).setAttributes(attributes));
+        final Item item = itemService.saveItem(new Item().setName(request.getItemName()).setType(type));
+
+        if (attributes != null && type != null && item != null) {
+            Set<Parameter> parameters = parameterService.saveParameters(
+                    attributes.stream()
+                            .map(a -> new Parameter()
+                                    .setItem(item)
+                                    .setAttribute(a)
+                                    .setValue(request.getParameters().get(a.getName()))
+                            ).collect(Collectors.toSet())
+            );
+
+            return new ResponseEntity<>(
+                    new ItemInformationResponse(
+                            item.getId(),
+                            item.getName(),
+                            item.getType().getId(),
+                            parameters
+                    ),
+                    HttpStatus.OK
+            );
+        }
+        else
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/type/existing/item/add") @Transactional
     ResponseEntity<ItemInformationResponse> addItemWithExistingType(@RequestBody ExistingTypeItemCreationRequest request) {
         if (typeService.verifyTypePresence(request.getTypeId(), request.getParameters().keySet())) {
             Item item = itemService.saveItem(
@@ -63,42 +96,7 @@ public class ModeratorController {
                     new ItemInformationResponse(
                             item.getId(),
                             item.getName(),
-                            parameters
-                    ),
-                    HttpStatus.OK
-            );
-        }
-        else
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-
-    @PostMapping("/catalog/type/new/item/add") @Transactional
-    ResponseEntity<ItemInformationResponse> addItemWithNewType(@RequestBody NewTypeItemCreationRequest request) {
-        Item item = new Item().setName(request.getItemName());
-        Type type = new Type().setName(request.getTypeName());
-
-        Set<Attribute> attributes = attributeService.findAttributesByName(request.getParameters().keySet());
-        type.setAttributes(attributes);
-        item.setType(type);
-        attributes = attributeService.saveAttributes(attributes);
-        type = typeService.saveType(type);
-        item = itemService.saveItem(item);
-
-        if (attributes != null && type != null && item != null) {
-            final Item finalItem = item;
-            Set<Parameter> parameters = parameterService.saveParameters(
-                    attributes.stream()
-                            .map(a -> new Parameter()
-                                    .setItem(finalItem)
-                                    .setAttribute(a)
-                                    .setValue(request.getParameters().get(a.getName()))
-                            ).collect(Collectors.toSet())
-            );
-
-            return new ResponseEntity<>(
-                    new ItemInformationResponse(
-                            item.getId(),
-                            item.getName(),
+                            item.getType().getId(),
                             parameters
                     ),
                     HttpStatus.OK
