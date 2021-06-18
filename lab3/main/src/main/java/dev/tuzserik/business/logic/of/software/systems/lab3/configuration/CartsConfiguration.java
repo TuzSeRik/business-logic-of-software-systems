@@ -13,7 +13,7 @@ import dev.tuzserik.business.logic.of.software.systems.lab3.model.Cart;
 public class CartsConfiguration {
     private final CartService cartService;
 
-    @Transactional @Scheduled(fixedRate = 3600)
+    @Transactional @Scheduled(fixedRate = 3600000)
     void deleteOldCarts() {
         Set<Cart> carts = cartService.findEmptyCarts();
 
