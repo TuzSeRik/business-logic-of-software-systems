@@ -9,5 +9,4 @@ import dev.tuzserik.business.logic.of.software.systems.lab3.model.Attribute;
 @Repository
 public interface AttributeRepository extends JpaRepository<Attribute, UUID> {
     Set<Attribute> findAllByIdIn(Set<UUID> ids);
-    Set<Attribute> findAllByNameIn(Set<String> names);
 }

@@ -5,7 +5,7 @@
 
     <groupId>dev.tuzserik.business.logic.of.software.systems.lab3</groupId>
     <artifactId>main</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <name>main</name>
     <description>Third lab work main module from Business Logic of Software Systems course</description>
 
@@ -40,10 +40,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-rest</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jta-atomikos</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>

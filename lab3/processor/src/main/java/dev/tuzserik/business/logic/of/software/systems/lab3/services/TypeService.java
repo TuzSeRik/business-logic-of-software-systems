@@ -6,7 +6,6 @@ import java.util.*;
 import dev.tuzserik.business.logic.of.software.systems.lab3.repositories.TypeRepository;
 import dev.tuzserik.business.logic.of.software.systems.lab3.repositories.AttributeRepository;
 import dev.tuzserik.business.logic.of.software.systems.lab3.model.Type;
-import dev.tuzserik.business.logic.of.software.systems.lab3.model.Attribute;
 
 @AllArgsConstructor @Service
 public class TypeService {
@@ -19,15 +18,6 @@ public class TypeService {
 
     public Type saveType(Type type) {
         return typeRepository.save(type);
-    }
-
-    public Type findTypeByNameAndAttributesNames(String typeName, Set<String> attributeNames) {
-        Set<Attribute> attributes =  attributeRepository.findAllByNameIn(attributeNames);
-
-        return typeRepository.findTypeByNameAndAttributesIn(
-                typeName,
-                Collections.singleton(Optional.ofNullable(attributes).orElse(Collections.emptySet()))
-        );
     }
 
     public boolean verifyTypePresence(UUID typeId, Set<UUID> attributesIds) {

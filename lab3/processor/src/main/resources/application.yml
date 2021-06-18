@@ -2,6 +2,13 @@ server:
   port: 22977
 
 spring:
+  activemq:
+    broker-url: tcp://localhost:61616
+    user: admin
+    password: admin
+    packages:
+      trust-all: true
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://pg:5432/studs
@@ -10,4 +17,4 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none

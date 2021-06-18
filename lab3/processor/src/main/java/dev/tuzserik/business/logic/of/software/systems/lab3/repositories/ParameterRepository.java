@@ -4,9 +4,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.*;
 import dev.tuzserik.business.logic.of.software.systems.lab3.model.Parameter;
-import dev.tuzserik.business.logic.of.software.systems.lab3.model.Attribute;
 
 @Repository
 public interface ParameterRepository extends JpaRepository<Parameter, UUID> {
-    Set<Parameter> findAllByAttributeIn(List<Attribute> attributes);
 }

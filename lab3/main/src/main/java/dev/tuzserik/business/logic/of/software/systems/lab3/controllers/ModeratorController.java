@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.jms.core.JmsTemplate;
 import java.util.stream.Collectors;
 import java.util.*;
 import dev.tuzserik.business.logic.of.software.systems.lab3.services.*;
@@ -18,6 +19,7 @@ public class ModeratorController {
     private final TypeService typeService;
     private final AttributeService attributeService;
     private final ParameterService parameterService;
+    private final JmsTemplate jmsTemplate;
 
     @PostMapping("/type/check")
     ResponseEntity<TypeInformationResponse> checkTypeExistence(@RequestBody TypeExistenceRequest request) {
@@ -104,5 +106,19 @@ public class ModeratorController {
         }
         else
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/type/new/item/add/bulk") @Transactional
+    HttpStatus addBulkItemWithNewType(@RequestBody BulkNewTypeItemCreationRequest request) {
+        jmsTemplate.convertAndSend("bulk-item-creation-new", request);
+
+        return HttpStatus.OK;
+    }
+
+    @PostMapping("/type/existing/item/add/bulk") @Transactional
+    HttpStatus addItemWithExistingType(@RequestBody BulkExistingTypeItemCreationRequest request) {
+        jmsTemplate.convertAndSend("bulk-item-creation-existing", request);
+
+        return HttpStatus.OK;
     }
 }
