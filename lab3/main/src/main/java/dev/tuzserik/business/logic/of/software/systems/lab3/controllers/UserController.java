@@ -28,8 +28,7 @@ public class UserController {
             );
 
             return new ResponseEntity<>(
-                    new UserInformationResponse(user.getUsername(), user.getRole(),
-                                                user.getGivenName(), user.getFamilyName()),
+                    new UserInformationResponse(user),
                     httpHeaders,
                     HttpStatus.OK
             );
@@ -44,9 +43,7 @@ public class UserController {
         User user = userService.findUserByUsername(username);
 
         if (user != null) {
-            return new ResponseEntity<>(new UserInformationResponse(
-                    user.getUsername(), user.getRole(), user.getGivenName(), user.getFamilyName()),
-                    HttpStatus.OK);
+            return new ResponseEntity<>(new UserInformationResponse(user), HttpStatus.OK);
         }
         else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
