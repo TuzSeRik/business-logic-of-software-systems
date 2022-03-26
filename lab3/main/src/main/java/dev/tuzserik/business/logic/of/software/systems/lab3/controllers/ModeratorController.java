@@ -1,5 +1,6 @@
 package dev.tuzserik.business.logic.of.software.systems.lab3.controllers;
 
+import dev.tuzserik.business.logic.of.software.systems.lab3.repositories.AttributeRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.*;
@@ -12,19 +13,22 @@ import dev.tuzserik.business.logic.of.software.systems.lab3.model.*;
 import dev.tuzserik.business.logic.of.software.systems.lab3.requests.*;
 import dev.tuzserik.business.logic.of.software.systems.lab3.responses.*;
 
-@AllArgsConstructor @RestController @RequestMapping("/api/moderator")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+import static dev.tuzserik.business.logic.of.software.systems.lab3.utils.Jwt.CLIENT_HOST;
+import static dev.tuzserik.business.logic.of.software.systems.lab3.utils.Jwt.MODERATOR_ENDPOINT;
+
+@AllArgsConstructor @RestController @RequestMapping(MODERATOR_ENDPOINT)
+@CrossOrigin(origins = CLIENT_HOST, allowCredentials = "true")
 public class ModeratorController {
-    private final ItemService itemService;
-    private final TypeService typeService;
-    private final AttributeService attributeService;
-    private final ParameterService parameterService;
-    private final JmsTemplate jmsTemplate;
+    private final ItemService itemFinder;
+    private final TypeService typeFinder;
+    private final AttributeRepository attributePersistence;
+    private final ParameterService parametersPersistence;
+    private final JmsTemplate messageTemplate;
 
     @PostMapping("/type/check")
     ResponseEntity<TypeInformationResponse> checkTypeExistence(@RequestBody TypeExistenceRequest request) {
         if (!request.getTypeName().isEmpty() && !request.getAttributesNames().isEmpty()) {
-            Type type = typeService.findTypeByNameAndAttributesNames(request.getTypeName(), request.getAttributesNames());
+            Type type = typeFinder.findTypeByNameAndAttributesNames(request.getTypeName(), request.getAttributesNames());
 
             if (type != null) {
                 return new ResponseEntity<>(
@@ -48,12 +52,12 @@ public class ModeratorController {
         Set<Attribute> attributes = request.getParameters().keySet().stream()
                                             .map(n -> new Attribute().setName(n))
                                             .collect(Collectors.toSet());
-        attributes = attributeService.saveAttributes(attributes);
-        final Type type = typeService.saveType(new Type().setName(request.getTypeName()).setAttributes(attributes));
-        final Item item = itemService.saveItem(new Item().setName(request.getItemName()).setType(type));
+        attributes = new HashSet<>(attributePersistence.saveAll(attributes));
+        final Type type = typeFinder.saveType(new Type().setName(request.getTypeName()).setAttributes(attributes));
+        final Item item = itemFinder.saveItem(new Item().setName(request.getItemName()).setType(type));
 
         if (attributes != null && type != null && item != null) {
-            Set<Parameter> parameters = parameterService.saveParameters(
+            Set<Parameter> parameters = parametersPersistence.saveParameters(
                     attributes.stream()
                             .map(a -> new Parameter()
                                     .setItem(item)
@@ -78,18 +82,18 @@ public class ModeratorController {
 
     @PostMapping("/type/existing/item/add") @Transactional
     ResponseEntity<ItemInformationResponse> addItemWithExistingType(@RequestBody ExistingTypeItemCreationRequest request) {
-        if (typeService.verifyTypePresence(request.getTypeId(), request.getParameters().keySet())) {
-            Item item = itemService.saveItem(
+        if (typeFinder.verifyTypePresence(request.getTypeId(), request.getParameters().keySet())) {
+            Item item = itemFinder.saveItem(
                     new Item()
                             .setName(request.getName())
-                            .setType(typeService.getTypeById(request.getTypeId()))
+                            .setType(typeFinder.getTypeById(request.getTypeId()))
             );
 
-            Set<Parameter> parameters = parameterService.saveParameters(
+            Set<Parameter> parameters = parametersPersistence.saveParameters(
                     request.getParameters().keySet().stream()
                             .map(k -> new Parameter()
                                     .setItem(item)
-                                    .setAttribute(attributeService.getAttributeById(k))
+                                    .setAttribute(attributePersistence.getOne(k))
                                     .setValue(request.getParameters().get(k))
                             ).collect(Collectors.toSet())
             );
@@ -110,14 +114,14 @@ public class ModeratorController {
 
     @PostMapping("/type/new/item/add/bulk") @Transactional
     HttpStatus addBulkItemWithNewType(@RequestBody BulkNewTypeItemCreationRequest request) {
-        jmsTemplate.convertAndSend("bulk-item-creation-new", request);
+        messageTemplate.convertAndSend("bulk-item-creation-new", request);
 
         return HttpStatus.OK;
     }
 
     @PostMapping("/type/existing/item/add/bulk") @Transactional
     HttpStatus addItemWithExistingType(@RequestBody BulkExistingTypeItemCreationRequest request) {
-        jmsTemplate.convertAndSend("bulk-item-creation-existing", request);
+        messageTemplate.convertAndSend("bulk-item-creation-existing", request);
 
         return HttpStatus.OK;
     }

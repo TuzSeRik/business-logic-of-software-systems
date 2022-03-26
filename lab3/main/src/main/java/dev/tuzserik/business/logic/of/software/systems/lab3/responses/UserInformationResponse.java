@@ -10,4 +10,11 @@ public class UserInformationResponse {
     private User.Role role;
     private String givenName;
     private String familyName;
+
+    public UserInformationResponse(User user) {
+        this.username = user.getUsername();
+        this.role = user.getRole();
+        this.givenName = user.getGivenName();
+        this.familyName = user.getFamilyName();
+    }
 }

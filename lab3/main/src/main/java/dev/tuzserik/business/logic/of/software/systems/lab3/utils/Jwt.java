@@ -9,6 +9,8 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 
 public class Jwt {
+    public static final String CLIENT_HOST = "http://localhost:3000";
+    public static final String MODERATOR_ENDPOINT = "/api/moderator";
     private static final SecretKey jwtSecret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     public static String encodeUsernameAndRole(String username, String role) {
