@@ -16,11 +16,14 @@ public class Order {
     private User buyer;
     @ManyToMany
     private List<Item> items;
-    private PaymentType paymentType;
-    @OneToOne
-    private Delivery delivery;
-    private Status status;
     private ZonedDateTime timestamp = ZonedDateTime.now();
+
+    private class OrderProceeding {
+        private PaymentType paymentType;
+        @OneToOne
+        private Delivery delivery;
+        private Status status;
+    }
 
     public enum Status {
         CREATED,
